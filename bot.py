@@ -4,6 +4,8 @@ import sqlite3
 import os
 import asyncio
 from typing import Dict, Any, Optional
+from config import BOT_TOKEN, password
+from decorator import send_test_email
 
 from telegram import (
     Update,
@@ -22,20 +24,20 @@ from telegram.ext import (
 )
 
 # ================== НАСТРОЙКИ (заполнить) ==================
-TOKEN = "7015237188:AAHSKMI5F-nsmahQZDtHw6r6aQQi_b2b64o"   # <- вставь токен от BotFather
+TOKEN = BOT_TOKEN
 BASE_DIR = os.path.dirname(__file__)
 
-# Папки с медиа — укажи свои пути (относительно BASE_DIR или абсолютные)
-VIDEOS_DIR = os.path.join(BASE_DIR, "assets")   # например: ./videos/welcome.mp4
-IMAGES_DIR = os.path.join(BASE_DIR, "assets")   # например: ./images/skills_pyramid.jpg
+# Папки с медиа
+VIDEOS_DIR = os.path.join(BASE_DIR, "assets")
+IMAGES_DIR = os.path.join(BASE_DIR, "assets")
 
-# Файлы (укажи свои)
+# Файлы
 WELCOME_VIDEO = os.path.join(VIDEOS_DIR, "welcome.mp4")
 SPEECH_VIDEO = os.path.join(VIDEOS_DIR, "speech_tips.mp4")
 SOFT_SKILLS_VIDEO = os.path.join(VIDEOS_DIR, "soft_skills_intro.mp4")
 SKILLS_PYRAMID_IMAGE = os.path.join(IMAGES_DIR, "skills_pyramid.jpg")
 
-# Почта администратора и SMTP (заполни данные)
+# Почта администратора и SMTP
 ADMIN_EMAIL = "gleb.krasnow@ya.ru"
 SMTP_HOST = "smtp.yandex.ru"
 SMTP_PORT = 465
@@ -470,6 +472,20 @@ async def form_message_handler(update: Update, context: ContextTypes.DEFAULT_TYP
         # Сохраняем в БД
         try:
             save_application(user.id, user.username, form)
+            print("=== Отправка письма через Яндекс ===")
+            # Данные для отправки
+            test_recipients = ['gleb.krasnow@ya.ru']  # Отправляем себе для теста
+            test_subject = "Новая анкета"
+            form_body = ("Пользователь заполнил новую анкету:"
+                         f"{form}")
+
+            print(f"Отправитель: gleb.krasnow@ya.ru")
+            print(f"Получатель: {test_recipients[0]}")
+            print(f"Тема: {test_subject}")
+            print("-" * 50)
+
+            # Отправка письма
+            send_test_email(form_body)
         except Exception as e:
             logger.exception("Failed saving application to DB: %s", e)
         # Отправляем на почту администратору (синхронная, но быстрая) — запускаем в отдельном потоке
