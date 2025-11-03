@@ -1,3 +1,0 @@
-BOT_TOKEN = "7015237188:AAHSKMI5F-nsmahQZDtHw6r6aQQi_b2b64o"
-ADMIN_CHAT_ID = 1079396241
-password = "ekdptsjwwgntnmly"
